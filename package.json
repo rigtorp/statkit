@@ -1,0 +1,33 @@
+{
+  "name": "statkit",
+  "version": "0.1.0",
+  "description": "Statistics toolkit",
+  "main": "statkit.js",
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {
+    "tape": "~2.13.3"
+  },
+  "scripts": {
+    "test": "tape test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/rigtorp/statkit.git"
+  },
+  "homepage": "https://github.com/rigtorp/statkit",
+  "keywords": [
+    "statistics",
+    "resampling",
+    "bootstrap",
+    "analytics"
+  ],
+  "author": {
+    "name": "Erik Rigtorp",
+    "email": "erik@rigtorp.se",
+    "url": "http://rigtorp.se"
+  },
+  "license": "MIT",
+  "readmeFilename": "README.md"
+}
