@@ -30,19 +30,23 @@ console.log("corr = ", corr, "ci = ", ci);
 Functions
 =========
 
-* min(a) - Minimum
-* max(a) - Maximum
-* mean(a) - Mean
-* gmean(a) - Geometric mean
-* hmean(a) - Harmonic mean
-* var(a) - Variance
-* std(a) - Standard deviation
-* skew(a) - Skewness
-* kurt(a) - Kurtosis
-* corr(x, y) - Correlation between x and y
-* sample(a) - Sample with replacement
-* boot(nboot, bootfun, data...) - Bootstrap the bootfun statistic
-* bootci(nboot, bootfun, data...) - Calculate bootstrap confidence intervals using the normal model
+* `min(a)` - [Minimum](http://en.wikipedia.org/wiki/Minimum)
+* `max(a)` - [Maximum](http://en.wikipedia.org/wiki/Maximum)
+* `mean(a)` - [Mean](http://en.wikipedia.org/wiki/Mean)
+* `gmean(a)` - [Geometric mean](http://en.wikipedia.org/wiki/Mean)
+* `hmean(a)` - [Harmonic mean](http://en.wikipedia.org/wiki/Mean)
+* `var(a)` - [Variance](http://en.wikipedia.org/wiki/Variance)
+* `std(a)` - [Standard deviation](http://en.wikipedia.org/wiki/Standard_deviation)
+* `skew(a)` - [Skewness](http://en.wikipedia.org/wiki/Skewness)
+* `kurt(a)` - [Kurtosis](http://en.wikipedia.org/wiki/Kurtosis)
+* `corr(x, y)` - [Correlation](http://en.wikipedia.org/wiki/Correlation) between x and y
+* `entropy(p)` - [Entropy](http://en.wikipedia.org/wiki/Entropy_(information_theory))
+* `kldiv(p, q)` - [Kullback–Leibler divergence](http://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence)
+* `shuffle(a)` - [Shuffle](http://en.wikipedia.org/wiki/Random_permutation) using the [Fisher–Yates shuffle](http://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle)
+* `sample(a)` - [Sample](http://en.wikipedia.org/wiki/Sampling_(statistics)) with replacement
+* `boot(nboot, bootfun, data...)` - [Bootstrap](http://en.wikipedia.org/wiki/Bootstrapping_(statistics)) the bootfun statistic
+* `bootci(nboot, bootfun, data...)` - Calculate bootstrap confidence intervals using the normal model
+* `randn()` - Draw random sample from the [standard normal distribution](http://en.wikipedia.org/wiki/Normal_distribution) using the [Marsaglia polar method](http://en.wikipedia.org/wiki/Marsaglia_polar_method)
 
 Credits
 =======

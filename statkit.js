@@ -119,6 +119,38 @@ exports.corr = function(x, y) {
   return sxy / Math.sqrt(sx2 * sy2);
 };
 
+exports.entropy = function(p) {
+  var n = p.length;
+  var e = 0.0;
+  for (var i = 0; i < n; ++i) {
+    e -= p[i] * Math.log(p[i]);
+  }
+  return e;
+}
+
+exports.kldiv = function(p, q) {
+  var n = p.length;
+  var e = 0.0;
+  var ce = 0.0;
+  for (var i = 0; i < n; ++i) {
+    e -= p[i] * Math.log(p[i]);
+    ce -= p[i] * Math.log(q[i]);
+  }
+  return ce - e;
+}
+
+// http://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
+exports.shuffle = function(a) {
+  var n = a.length;
+  for (var i = n - 1; i > 0; i--) {
+    var j = Math.random() * i | 0; // 0 ≤ j < i
+    var t = array[j];
+    array[j] = array[i];
+    array[i] = t;
+  }
+  return a;
+}
+
 exports.sample = function(a) {
   var n = a.length;
   var s = a.slice(0);
@@ -160,6 +192,19 @@ exports.bootci = function(nboot, bootfun) {
   var bootstat = exports.boot.apply(null, [nboot, bootfun].concat(data));
   var s = exports.std(bootstat);
   return [v - 2*s, v + 2*s];
+};
+
+// http://en.wikipedia.org/wiki/Marsaglia_polar_method
+// TODO: implement http://en.wikipedia.org/wiki/Ziggurat_algorithm
+exports.randn = function() {
+  var u, v, s;
+  do {
+    u = Math.rand() * 2 - 1;
+    v = Math.rand() * 2 - 1;
+    s = u * u + v * v;
+  } while (s >= 1 || s == 0);
+  s = Math.sqrt(-2 * Math.log(s) / s);
+  return u * s;
 };
 
 // http://picomath.org/javascript/erf.js.html
