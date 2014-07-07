@@ -10,6 +10,7 @@ print a.tolist()
 
 print "min", np.array([np.min(a)])
 print "max", np.array([np.max(a)])
+print "range", np.array([np.max(a)])
 print "mean", np.array([np.mean(a)])
 print "gmean", np.array([st.gmean(a)])
 print "hmean", np.array([st.hmean(a)])

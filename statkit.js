@@ -22,6 +22,36 @@ function max(a) {
   return s;
 };
 
+function range(a) {
+  return max(a) - min(a);
+};
+
+function quantile(a, p, sorted) {
+  var t = a;
+  if (sorted === void 0) {
+    t = a.slice(0);
+    t.sort(function(a, b){return a-b});
+  }
+  return t[Math.floor(p * t.length)];
+};
+
+function median(a, sorted) {
+  var t = a;
+  if (sorted === void 0) {
+    t = a.slice(0);
+    t.sort(function(a, b){return a-b});
+  }
+  if ((t.length % 2) === 0) {
+    var idx = t.length / 2;
+    return (t[idx - 1] + t[idx]) / 2;
+  }
+  return t[(t.length - 1) / 2];
+};
+
+function iqr(a, sorted) {
+  return quantile(a, 0.75, sorted) - quantile(a, 0.25, sorted);
+};
+
 function mean(a) {
   var n = a.length;
   var s = 0.0;
@@ -240,6 +270,10 @@ function normcdf(x) {
 
 exports.min = min;
 exports.max = max;
+exports.range = range;
+exports.quantile = quantile;
+exports.median = median;
+exports.iqr = iqr;
 exports.mean = mean;
 exports.gmean = gmean;
 exports.hmean = hmean;

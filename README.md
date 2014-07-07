@@ -32,6 +32,10 @@ Functions
 
 * `min(a)` - [Minimum](http://en.wikipedia.org/wiki/Minimum)
 * `max(a)` - [Maximum](http://en.wikipedia.org/wiki/Maximum)
+* `range(a)` - [Range](http://en.wikipedia.org/wiki/Range_(statistics))
+* `quantile(a)` - [Quantile](http://en.wikipedia.org/wiki/Quantile)
+* `median(a)` - [Median](http://en.wikipedia.org/wiki/Median)
+* `iqr(a)` - [Interquartile range](http://en.wikipedia.org/wiki/Interquartile_range)
 * `mean(a)` - [Mean](http://en.wikipedia.org/wiki/Mean)
 * `gmean(a)` - [Geometric mean](http://en.wikipedia.org/wiki/Mean)
 * `hmean(a)` - [Harmonic mean](http://en.wikipedia.org/wiki/Mean)
