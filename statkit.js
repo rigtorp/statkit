@@ -1,6 +1,6 @@
-"use strict"
+"use strict";
 
-exports.min = function(a) {
+function min(a) {
   var n = a.length;
   var s = a[0];
   for (var i = 1; i < n; ++i) {
@@ -11,7 +11,7 @@ exports.min = function(a) {
   return s;
 };
 
-exports.max = function(a) {
+function max(a) {
   var n = a.length;
   var s = a[0];
   for (var i = 1; i < n; ++i) {
@@ -22,7 +22,7 @@ exports.max = function(a) {
   return s;
 };
 
-exports.mean = function(a) {
+function mean(a) {
   var n = a.length;
   var s = 0.0;
   for (var i = 0; i < n; ++i) {
@@ -31,7 +31,7 @@ exports.mean = function(a) {
   return s / n;
 };
 
-exports.gmean = function(a) {
+function gmean(a) {
   var n = a.length;
   var s = 0.0;
   for (var i = 0; i < n; ++i) {
@@ -40,7 +40,7 @@ exports.gmean = function(a) {
   return Math.exp(s / n);
 };
 
-exports.hmean = function(a) {
+function hmean(a) {
   var n = a.length;
   var s = 0.0;
   for (var i = 0; i < n; ++i) {
@@ -49,11 +49,11 @@ exports.hmean = function(a) {
   return n / s;
 };
 
-exports.var = function(a, m) {
+function var_(a, m) {
   var n = a.length;
   var s = 0.0;
   if (m === void 0) {
-    m = exports.mean(a);
+    m = mean(a);
   }
   for (var i = 0; i < n; ++i) {
     var z = a[i] - m;
@@ -62,16 +62,16 @@ exports.var = function(a, m) {
   return s / n;
 };
 
-exports.std = function(a, m) {
-  return Math.sqrt(exports.var(a, m));
+function std(a, m) {
+  return Math.sqrt(var_(a, m));
 };
 
-exports.skew = function(a, m) {
+function skew(a, m) {
   var n = a.length;
   var cm2 = 0.0;
   var cm3 = 0.0;
   if (m === void 0) {
-    m = exports.mean(a);
+    m = mean(a);
   }
   for (var i = 0; i < n; ++i) {
     var z = a[i] - m;
@@ -84,12 +84,12 @@ exports.skew = function(a, m) {
   return cm3 / Math.sqrt(cm2 * cm2 * cm2);
 };
 
-exports.kurt = function(a, m) {
+function kurt(a, m) {
   var n = a.length;
   var cm2 = 0.0;
   var cm4 = 0.0;
   if (m === void 0) {
-    m = exports.mean(a);
+    m = mean(a);
   }
   for (var i = 0; i < n; ++i) {
     var z = a[i] - m;
@@ -102,10 +102,10 @@ exports.kurt = function(a, m) {
   return (cm4 / (cm2 * cm2)) - 3;
 };
 
-exports.corr = function(x, y) {
+function corr(x, y) {
   var n = x.length;
-  var xm = exports.mean(x);
-  var ym = exports.mean(y);
+  var xm = mean(x);
+  var ym = mean(y);
   var sxy = 0.0;
   var sx2 = 0.0;
   var sy2 = 0.0;
@@ -119,16 +119,16 @@ exports.corr = function(x, y) {
   return sxy / Math.sqrt(sx2 * sy2);
 };
 
-exports.entropy = function(p) {
+function entropy(p) {
   var n = p.length;
   var e = 0.0;
   for (var i = 0; i < n; ++i) {
     e -= p[i] * Math.log(p[i]);
   }
   return e;
-}
+};
 
-exports.kldiv = function(p, q) {
+function kldiv(p, q) {
   var n = p.length;
   var e = 0.0;
   var ce = 0.0;
@@ -137,10 +137,10 @@ exports.kldiv = function(p, q) {
     ce -= p[i] * Math.log(q[i]);
   }
   return ce - e;
-}
+};
 
 // http://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
-exports.shuffle = function(a) {
+function shuffle(a) {
   var n = a.length;
   for (var i = n - 1; i > 0; i--) {
     var j = Math.random() * i | 0; // 0 ≤ j < i
@@ -149,18 +149,21 @@ exports.shuffle = function(a) {
     array[i] = t;
   }
   return a;
-}
+};
 
-exports.sample = function(a) {
+function sample(a) {
   var n = a.length;
   var s = a.slice(0);
   for (var i = 0; i < n; ++i) {
     s[i] = a[Math.floor(n * Math.random())];
   }
   return s;
-}
+};
 
-exports.boot = function(nboot, bootfun) {
+// Efron, B. Bootstrap Methods: Another Look at the Jackknife.
+// The Annals of Statistics 7 (1979), no. 1, 1--26. doi:10.1214/aos/1176344552.
+// http://projecteuclid.org/euclid.aos/1176344552.
+function boot(nboot, bootfun) {
   var data = [];
   for (var i = 2; i < arguments.length; ++i) {
     data[i - 2] = arguments[i];
@@ -183,20 +186,20 @@ exports.boot = function(nboot, bootfun) {
   return res;
 };
 
-exports.bootci = function(nboot, bootfun) {
+function bootci(nboot, bootfun) {
   var data = [];
   for (var i = 2; i < arguments.length; ++i) {
     data[i - 2] = arguments[i];
   }
   var v = bootfun.apply(null, data);
-  var bootstat = exports.boot.apply(null, [nboot, bootfun].concat(data));
-  var s = exports.std(bootstat);
+  var bootstat = boot.apply(null, [nboot, bootfun].concat(data));
+  var s = std(bootstat);
   return [v - 2*s, v + 2*s];
 };
 
 // http://en.wikipedia.org/wiki/Marsaglia_polar_method
 // TODO: implement http://en.wikipedia.org/wiki/Ziggurat_algorithm
-exports.randn = function() {
+function randn() {
   var u, v, s;
   do {
     u = Math.rand() * 2 - 1;
@@ -208,7 +211,7 @@ exports.randn = function() {
 };
 
 // http://picomath.org/javascript/erf.js.html
-exports.erf = function(x) {
+function erf(x) {
   // constants
   var a1 =  0.254829592;
   var a2 = -0.284496736;
@@ -231,7 +234,26 @@ exports.erf = function(x) {
   return sign*y;
 };
 
+function normcdf(x) {
+  return 0.5 * (1.0 + erf(x / Math.sqrt(2)));
+};
 
-exports.normcdf = function(x) {
-  return 0.5 * (1.0 + exports.erf(x / Math.sqrt(2)));
-}
+exports.min = min;
+exports.max = max;
+exports.mean = mean;
+exports.gmean = gmean;
+exports.hmean = hmean;
+exports.var = var_;
+exports.std = std;
+exports.skew = skew;
+exports.kurt = kurt;
+exports.corr = corr;
+exports.entropy = entropy;
+exports.kldiv = kldiv;
+exports.shuffle = shuffle;
+exports.sample = sample;
+exports.boot = boot;
+exports.bootci = bootci;
+exports.randn = randn;
+exports.erf = erf;
+exports.normcdf = normcdf;
