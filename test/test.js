@@ -8,7 +8,7 @@ tape("stats", function(t) {
            0.41358769878652346, 0.04881279380000003, 0.09992856132121142,
            0.5080663057670065];
 
-  var tol = 1e-16;
+  var tol = 1e-15;
 
   function near(a, b, msg) {
     t.ok(Math.abs(a - b) < tol, msg)
@@ -38,7 +38,7 @@ tape("stats", function(t) {
   near(st.gmean(a), 0.28557127946531724039, "gmean")
   near(st.hmean(a), 0.08325329480982600339, "hmean")
   near(st.var(a), 0.10541207022165724472, "var")
-  near(st.std(a), 0.32467225046446029912, "std")
+  near(st.std(a, true), 0.32467225046446029912, "std")
   near(st.kurt(a), -1.34748749550481905501, "kurt")
   near(st.skew(a), -0.31810224917209384277, "skew")
 

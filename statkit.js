@@ -54,11 +54,11 @@ function iqr(a, sorted) {
 
 function mean(a) {
   var n = a.length;
-  var s = 0.0;
+  var m = 0.0;
   for (var i = 0; i < n; ++i) {
-    s += a[i];
+    m += (a[i] - m) / (i + 1);
   }
-  return s / n;
+  return m;
 };
 
 function gmean(a) {
@@ -81,55 +81,56 @@ function hmean(a) {
 
 function var_(a, m) {
   var n = a.length;
+  var v = 0.0;
+  if (m === void 0) {
+    m = mean(a);
+  }
+  for (var i = 0; i < n; ++i) {
+    var z = a[i] - m;
+    v += (z * z - v) / (i + 1);
+  }
+  return v;
+};
+
+function std(a, flag, m) {
+  if (flag === true) {
+    return Math.sqrt(var_(a, m));
+  } else {
+    var n = a.length;
+    return Math.sqrt(var_(a, m) * n / (n - 1));
+  }
+};
+
+function skew(a, m, sd) {
+  var n = a.length;
   var s = 0.0;
   if (m === void 0) {
     m = mean(a);
   }
-  for (var i = 0; i < n; ++i) {
-    var z = a[i] - m;
-    s += z * z;
+  if (sd === void 0) {
+    sd = std(a, true);
   }
-  return s / n;
+  for (var i = 0; i < n; ++i) {
+    var z = (a[i] - m) / sd;
+    s += (z * z * z - s) / (i + 1);
+  }
+  return s;
 };
 
-function std(a, m) {
-  return Math.sqrt(var_(a, m));
-};
-
-function skew(a, m) {
+function kurt(a, m, sd) {
   var n = a.length;
-  var cm2 = 0.0;
-  var cm3 = 0.0;
+  var k = 0.0;
   if (m === void 0) {
     m = mean(a);
   }
-  for (var i = 0; i < n; ++i) {
-    var z = a[i] - m;
-    var z2 = z * z;
-    cm2 += z2;
-    cm3 += z2 * z;
-  }
-  cm2 /= n;
-  cm3 /= n;
-  return cm3 / Math.sqrt(cm2 * cm2 * cm2);
-};
-
-function kurt(a, m) {
-  var n = a.length;
-  var cm2 = 0.0;
-  var cm4 = 0.0;
-  if (m === void 0) {
-    m = mean(a);
+  if (sd === void 0) {
+    sd = std(a, true);
   }
   for (var i = 0; i < n; ++i) {
-    var z = a[i] - m;
-    var z2 = z * z;
-    cm2 += z2;
-    cm4 += z2 * z2;
+    var z = (a[i] - m) / sd;
+    k += (z * z * z * z - k) / (i + 1);
   }
-  cm2 /= n;
-  cm4 /= n;
-  return (cm4 / (cm2 * cm2)) - 3;
+  return k - 3.0;
 };
 
 function corr(x, y) {
