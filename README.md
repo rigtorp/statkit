@@ -51,6 +51,8 @@ Functions
 * `boot(nboot, bootfun, data...)` - [Bootstrap](http://en.wikipedia.org/wiki/Bootstrapping_(statistics)) the bootfun statistic
 * `bootci(nboot, bootfun, data...)` - Calculate bootstrap confidence intervals using the normal model
 * `randn()` - Draw random sample from the [standard normal distribution](http://en.wikipedia.org/wiki/Normal_distribution) using the [Marsaglia polar method](http://en.wikipedia.org/wiki/Marsaglia_polar_method)
+* `normcdf(x)` - Normal cumulative distribution function
+* `norminv(p)` - Normal inverse cumulative distribution function
 
 Credits
 =======
