@@ -403,6 +403,87 @@ function norminv(p) {
   return x;
 };
 
+function lufactor(A, n) {
+  var signum = 1;
+  var p = new Array(n);
+  for (var i = 0; i < n; ++i) {
+    p[i] = i;
+  }
+
+  for (var j = 0; j < n - 1; ++j) {
+
+    // find maximum of the j-th column
+    var max = Math.abs(A[n*j + j]);
+    var pivot = j;
+    for (var i = j + 1; i < n; ++i) {
+      var aij = Math.abs(A[n*i + j]);
+      if (aij > max) {
+        max = aij;
+        pivot = i;
+      }
+    }
+
+    if (pivot != j) {
+      // swap rows of A
+      for (var i = 0; i < n; ++i) {
+        var tmp = A[n*j + i];
+        A[n*j + i] = A[n*pivot + i];
+        A[n*pivot + i] = tmp;
+      }
+
+      // update permutation vector
+      p[j] = pivot;
+
+      signum = -signum;
+    }
+
+    var ajj = A[n*j + j];
+    if (ajj === 0.0) {
+      throw "singular matrix";
+    }
+
+    for (var i = j + 1; i < n; ++i) {
+      var aij = A[n*i + j] / ajj;
+      A[n*i + j] = aij;
+      for (var k = j + 1; k < n; ++k) {
+        var aik = A[n*i + k];
+        var ajk = A[n*j + k];
+        A[n*i + k] = aik - aij * ajk;
+      }
+    }
+  }
+  return [A, p, signum];
+};
+
+function lusolve(LU, perm, x) {
+  var n = perm.length;
+
+  // permute x
+  for (var i = 0; i < n; ++i) {
+    var tmp = x[i];
+    x[i] = x[perm[i]];
+    x[perm[i]] = tmp;
+  }
+
+  // forward substitution Ly=Pb
+  for (var i = 0; i < n; ++i) {
+    var xi = x[i];
+    for (var j = 0; j < i; ++j) {
+      xi -= LU[n*i + j]*x[j];
+    }
+    x[i] = xi;
+  }
+
+  // backward substitition Ux=y
+  for (var i = n - 1; i >= 0; --i) {
+    var xi = x[i];
+    for (var j = i + 1; j < n; ++j) {
+      xi -= LU[n*i + j]*x[j];
+    }
+    x[i] = xi / LU[n*i + i];
+  }
+};
+
 exports.min = min;
 exports.max = max;
 exports.range = range;
@@ -427,3 +508,5 @@ exports.randn = randn;
 exports.erf = erf;
 exports.normcdf = normcdf;
 exports.norminv = norminv;
+exports.lufactor = lufactor;
+exports.lusolve = lusolve;

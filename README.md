@@ -53,6 +53,8 @@ Functions
 * `randn()` - Draw random sample from the [standard normal distribution](http://en.wikipedia.org/wiki/Normal_distribution) using the [Marsaglia polar method](http://en.wikipedia.org/wiki/Marsaglia_polar_method)
 * `normcdf(x)` - Normal cumulative distribution function
 * `norminv(p)` - Normal inverse cumulative distribution function
+* `lufactor(A, n)` - Compute pivoted [LU decomposition](http://en.wikipedia.org/wiki/LU_decomposition)
+* `lusolve(LU, p, b)` - Solve `Ax=b` given the LU factorization of A
 
 Credits
 =======
