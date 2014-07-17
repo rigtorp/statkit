@@ -27,6 +27,25 @@ var ci = sk.bootci(100000, sk.corr, gpa, lsat);
 console.log("corr = ", corr, "ci = ", ci);
 ```
 
+Perform a linear regression on the first data set in
+[Anscombe's quartet](http://en.wikipedia.org/wiki/Anscombe%27s_quartet):
+
+```javascript
+var sk = require("statkit");
+
+var x = [10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5];
+var y = [8.04, 6.95, 7.58, 8.81, 8.33, 9.96, 7.24, 4.26, 10.84, 4.82, 5.68];
+
+var A = new Array(x.length*2);
+for (var i = 0; i < x.length; ++i) {
+  A[2*i] = 1;
+  A[2*i + 1] = x[i];
+}
+var b = sk.lstsq(x.length, 2, A, y);
+
+console.log("intercept = ", b[0], "slope = ", b[1]);
+```
+
 Functions
 =========
 
@@ -54,7 +73,10 @@ Functions
 * `normcdf(x)` - Normal cumulative distribution function
 * `norminv(p)` - Normal inverse cumulative distribution function
 * `lufactor(A, n)` - Compute pivoted [LU decomposition](http://en.wikipedia.org/wiki/LU_decomposition)
-* `lusolve(LU, p, b)` - Solve `Ax=b` given the LU factorization of A
+* `lusolve(LU, p, b)` - Solve `Ax=b` given the LU factorization of `A`
+* `qrfactor(m, n, A)` - Compute [QR factorization](http://en.wikipedia.org/wiki/QR_decomposition) of A
+* `qrsolve(m, n, QR, tau, b)` - Solve the least squares problem `min ||Ax = b||` using QR factorization `QR` of `A`
+* `lstsq(m, n, A, b)` - Solve the [least squares problem](http://en.wikipedia.org/wiki/Least_squares) `min ||Ax = b||`
 
 Credits
 =======

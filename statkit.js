@@ -403,6 +403,32 @@ function norminv(p) {
   return x;
 };
 
+function fsub(n, A, x) {
+  // forward substitution Ax=b
+  // A n x n lower triangular matrix
+  // x n vector
+  for (var i = 0; i < n; ++i) {
+    var xi = x[i];
+    for (var j = 0; j < i; ++j) {
+      xi -= A[n*i + j]*x[j];
+    }
+    x[i] = xi;
+  }
+}
+
+function bsub(n, A, x) {
+  // backward substitution Ax=b
+  // A n x n upper triangular matrix
+  // x n vector
+  for (var i = n - 1; i >= 0; --i) {
+    var xi = x[i];
+    for (var j = i + 1; j < n; ++j) {
+      xi -= A[n*i + j]*x[j];
+    }
+    x[i] = xi / A[n*i + i];
+  }
+}
+
 function lufactor(A, n) {
   var signum = 1;
   var p = new Array(n);
@@ -466,23 +492,147 @@ function lusolve(LU, perm, x) {
   }
 
   // forward substitution Ly=Pb
-  for (var i = 0; i < n; ++i) {
-    var xi = x[i];
-    for (var j = 0; j < i; ++j) {
-      xi -= LU[n*i + j]*x[j];
-    }
-    x[i] = xi;
-  }
+  fsub(n, LU, x);
 
   // backward substitition Ux=y
-  for (var i = n - 1; i >= 0; --i) {
-    var xi = x[i];
-    for (var j = i + 1; j < n; ++j) {
-      xi -= LU[n*i + j]*x[j];
-    }
-    x[i] = xi / LU[n*i + i];
-  }
+  bsub(n, LU, x);
 };
+
+function qrfactor(m, n, A) {
+  // Compute the QR factorization of A
+  // LAPACK: DGEQR2
+
+  function norm(n, X, incx, offx) {
+    // Euclidean norm
+    // LAPACK: DNRM2
+
+    if (n === 0.0) {
+      return Math.abs(n);
+    }
+
+    var scale = 0.0;
+    var ssq = 1.0;
+    for (var i = 0; i < n; ++i) {
+      var xi = X[offx + incx*i];
+      if (xi !== 0.0) {
+        var absxi = Math.abs(xi);
+        if (scale < absxi) {
+          var z = scale / absxi;
+          ssq = 1.0 + ssq * (z * z);
+          scale = absxi;
+        } else {
+          var z = absxi / scale;
+          ssq = ssq + z * z;
+        }
+      }
+    }
+    return scale * Math.sqrt(ssq);
+  }
+
+  function ht(n, X, incx, offx) {
+    // Compute householder transformation
+    // LAPACK: DLARFG
+
+    if (n === 1) {
+      return 0.0;
+    }
+
+    var xnorm = norm(n, X, incx, offx);
+    var alpha = X[offx];
+    var beta = -(alpha >= 0.0 ? 1.0 : -1.0) * xnorm;
+
+    var scale = 1.0 / (alpha - beta);
+    for (var i = 0; i < n; ++i) {
+      X[offx + incx*i] *= scale;
+    }
+    X[offx] = beta;
+
+    var tau = (beta - alpha) / beta;
+    return tau;
+  }
+
+  function hm(m, n, A, lda, off, tau) {
+    // Apply housholder transform
+    // LAPACK: DLARF
+
+    if (tau === 0.0) {
+      return;
+    }
+
+    for (var j = 1; j < n; ++j) {
+      // compute wj = v' Aj
+      var wj = A[off + j];
+      for (var i = 1; i < m; ++i) {
+        var vi = A[off + lda*i];
+        var Aij = A[off + lda*i + j];
+        wj += Aij * vi;
+      }
+
+      // compute Aj = Aj - tau * v * v' * Aj
+      A[off + j] -= tau * wj;
+      for (var i = 1; i < m; ++i) {
+        var vi = A[off + lda*i];
+        A[off + lda*i + j] -= tau * vi * wj;
+      }
+    }
+  }
+
+  var k = Math.min(m, n)
+  var tau = new Array(k);
+  for (var j = 0; j < k; ++j) {
+    tau[j] = ht(m-j, A, n, n*j + j);
+    if (j + 1 < n) {
+      hm(m-j, n-j, A, n, j*n + j, tau[j]);
+    }
+  }
+  return tau;
+}
+
+function qrsolve(m, n, QR, tau, b) {
+  // Solve the least squares problem min ||Ax=b||
+
+  function hm(n, v, incv, offv, tau, b, offb) {
+    // Apply householder transformation b = b - tau v v' b
+    // LAPACK: DLARF
+
+    if (tau === 0.0) {
+      return;
+    }
+
+    // compute v' b
+    var d = b[offb + 0];
+    for (var i = 1; i < n; ++i) {
+      d += b[offb + i] * v[offv + incv*i];
+    }
+
+    // compute b = b - tau v v' b
+    b[offb + 0] -= tau * d;
+    for (var i = 1; i < n; ++i) {
+      b[offb + i] -= tau * v[offv + incv*i] * d;
+    }
+  }
+
+  function qtb(m, n, QR, tau, b) {
+    // LAPACK: DORMQR
+    var k = Math.min(m, n)
+    for (var j = 0; j < k; ++j) {
+      hm(m - j, QR, n, n*j + j, tau[j], b, j);
+    }
+  }
+
+  // compute Q'b
+  qtb(m, n, QR, tau, b);
+
+  // solve Rx=Q'b
+  bsub(n, QR, b);
+}
+
+function lstsq(m, n, A, b) {
+  // Solve the least squares problem min ||Ax - b||
+  var tau = qrfactor(m, n, A);
+  qrsolve(m, n, A, tau, b);
+  return b.slice(0, n);
+}
 
 exports.min = min;
 exports.max = max;
@@ -510,3 +660,6 @@ exports.normcdf = normcdf;
 exports.norminv = norminv;
 exports.lufactor = lufactor;
 exports.lusolve = lusolve;
+exports.qrfactor = qrfactor;
+exports.qrsolve = qrsolve;
+exports.lstsq = lstsq;
