@@ -233,8 +233,8 @@ function bootci(nboot, bootfun) {
 function randn() {
   var u, v, s;
   do {
-    u = Math.rand() * 2 - 1;
-    v = Math.rand() * 2 - 1;
+    u = Math.random() * 2 - 1;
+    v = Math.random() * 2 - 1;
     s = u * u + v * v;
   } while (s >= 1 || s == 0);
   s = Math.sqrt(-2 * Math.log(s) / s);
@@ -634,6 +634,55 @@ function lstsq(m, n, A, b) {
   return b.slice(0, n);
 }
 
+function metropolis(lnpost, p, n, scale, burn, thin) {
+  if (scale === void 0) {
+    scale = 1.0;
+  }
+  if (burn === void 0) {
+    burn = 0;
+  }
+  if (thin === void 0) {
+    thin = 1;
+  }
+  var lnprob = lnpost(p);
+  var accepted = 0;
+  var chain = Array(p.length);
+  for (var j = 0; j < p.length; j++) {
+    chain[j] = Array((n - burn) / thin);
+  }
+  for (var i = 0; i < n; i++) {
+    // generate proposal q
+    var q = Array(p.length);
+    for (var j = 0; j < p.length; j++) {
+      q[j] = p[j] + scale*randn();
+    }
+
+    // calculate M-H acceptance ratio
+    var newlnprob = lnpost(q);
+    var diff = newlnprob - lnprob;
+
+    if (diff < 0) {
+      diff = Math.exp(diff) - Math.random();
+    }
+
+    // accept or reject candidate
+    if (diff > 0) {
+      p = q;
+      lnprob = newlnprob;
+      accepted++;
+    }
+
+    // store chain
+    if (i >= burn && i % thin == 0) {
+      var idx = (i - burn) / thin;
+      for (var j = 0; j < p.length; j++) {
+        chain[j][idx] = p[j];
+      }
+    }
+  }
+  return {accepted: accepted/n, chain: chain};
+}
+
 exports.min = min;
 exports.max = max;
 exports.range = range;
@@ -663,3 +712,4 @@ exports.lusolve = lusolve;
 exports.qrfactor = qrfactor;
 exports.qrsolve = qrsolve;
 exports.lstsq = lstsq;
+exports.metropolis = metropolis;
